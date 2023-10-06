@@ -1,35 +1,72 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import './normalize.css'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    return (
+        <>
+            <div className={'container'}>
+
+                {/*Header*/}
+
+                <div className="header" style={{display: 'flex', justifyContent: 'space-between'}}>
+                    <small style={{fontSize: '10px', marginLeft: '2em'}}>build id</small>
+                    <img src="vite.svg" alt={'logotype-app'}/>
+                </div>
+
+                {/*Profile*/}
+
+                <div className="profile">
+                    <img src="vite.svg" alt={'users-avatar'}/>
+                    <div className={"profile-info"}>
+                        <span className={'profile-info-name'}>Name</span>&nbsp;<span>Nik</span>
+                        <br/>
+                        <span className={'profile-info-status'}>status:</span>&nbsp;<span>Developer</span>
+                    </div>
+                </div>
+
+                {/*Info yourself*/}
+
+                <div className="statistics">
+                    <ul>
+                        <li>Количество слов:</li>
+                        <li>Количество выученных слов:</li>
+                        <li>Количество колод:</li>
+                    </ul>
+                </div>
+
+                {/*Btn utils*/}
+
+                <div className="editors-buttons">
+                    <button className={'btn btn-settings'}>Settings</button>
+                    <button className={'btn btn-import'}>Import</button>
+                    <button className={'btn btn-any'}>Any</button>
+                </div>
+
+                {/*Footer*/}
+
+                <div className='footer'>
+                    <ul style={{
+                        padding: 0,
+                        listStyle: "none",
+                        display: 'flex',
+                        justifyContent: "space-around",
+                        fontSize: '12px'
+                    }}>
+                        <li><a href="#">
+                            created by Nik
+                        </a></li>
+                        <li><a href="#">
+                            Privacy and Politics
+                        </a></li>
+                        <li><a href="#">
+                            Bug report
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </>
+    )
 }
 
 export default App
