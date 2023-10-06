@@ -60,22 +60,46 @@ span {
 ul {
     list-style: none;
 }
+
 li {
     padding: 0;
     margin: 0;
     text-align: left;
 }
+
 .statistics {
     margin-top: 20px;
     display: flex;
 
     margin-right: auto;
 }
+
 .btn-import {
     cursor: not-allowed;
     background-color: #213547;
 }
 
+
+/*category*/
+
+
+.category__mainscreen {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.category__mainscreen button {
+    cursor: not-allowed;
+    background-color: #f9f9f9;
+    border-radius: 2px;
+    border: none;
+}
+
+.category__mainscreen button {
+    cursor: pointer;
+    margin: 0 3px;
+}
 /*footer*/
 .footer a {
     color: #535bf2;

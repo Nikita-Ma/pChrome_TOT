@@ -43,6 +43,16 @@ function App() {
                     <button className={'btn btn-any'}>Any</button>
                 </div>
 
+                {/*category*/}
+                <div className={'category category__mainscreen'}>
+                    <select>
+                        <option value="option1">Категория 1</option>
+                        <option value="option2">Категория 2</option>
+                    </select>
+                    <button>repeat</button>
+                    <button>+</button>
+                </div>
+
                 {/*Footer*/}
 
                 <div className='footer'>
