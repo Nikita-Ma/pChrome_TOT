@@ -7,19 +7,20 @@ import {
     RouterProvider,
 } from "react-router-dom";
 import ErrorPage from "./components/ErrorPage.tsx";
-import ModalCategory from "./components/ModalCategory.tsx";
-import NotFound from "./components/NotFound.tsx";
+import CategoryPage from "./components/CategoryPage.tsx";
 import DetailsCategory from "./components/DetailsCategory.tsx";
+import LoginPage from "./components/LoginPage.tsx";
+import RegisterPage from "./components/RegisterPage.tsx";
 
 const router = createBrowserRouter([
     {
-        path: "/",
+        path: "*",
         element: <App/>,
         errorElement: <ErrorPage/>,
     },
     {
         path: "/collection",
-        element: <ModalCategory/>,
+        element: <CategoryPage/>,
         errorElement: <ErrorPage/>,
     },
     // TODO: child path don't work. >(
@@ -28,10 +29,19 @@ const router = createBrowserRouter([
         element: <DetailsCategory/>,
         errorElement: <ErrorPage/>
     },
+    // Auth
     {
-        path: "*",
-        element: <NotFound/>,
-        errorElement: <ErrorPage/>,
+        path: '/auth',
+        children: [
+            {
+                path: 'login',
+                element: <LoginPage/>
+            },
+            {
+                path: 'register',
+                element: <RegisterPage/>
+            }
+        ]
     },
 ]);
 

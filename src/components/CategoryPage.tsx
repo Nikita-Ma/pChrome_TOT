@@ -1,10 +1,14 @@
-export default function ModalCategory() {
+import {Link} from "react-router-dom";
+
+export default function CategoryPage() {
     return (
         <div>
             <h2>Create COLLECTION</h2>
             <input type="text" placeholder={'Collection name'}/>
             <button>Save</button>
-            <button>Go back</button>
+            <Link to={'/'}>
+                <button>Go back</button>
+            </Link>
             <h4>Collection list</h4>
             <ul>
                 <li>

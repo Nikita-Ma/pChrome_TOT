@@ -1,10 +1,15 @@
+import {Link} from "react-router-dom";
+
 export default function DetailsCategory() {
     return (
         <div>
             <h2>COLLCTION NAME</h2>
             <input type="text" placeholder={'add letter'}/>
             <button>Save</button>
-            <button>Go back</button>
+            {/*TODO: Create COMPONENT GO BACK AND ETC!!*/}
+            <Link to={'/'}>
+                <button>Go back</button>
+            </Link>
             <h4>Collection list</h4>
             <ul>
                 <li>

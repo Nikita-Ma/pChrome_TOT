@@ -1,8 +1,12 @@
 import './normalize.css'
 import {Link} from "react-router-dom";
+import {useEffect, useState} from "react";
 
 function App() {
-
+    const [auth, setAuth] = useState(false)
+    useEffect(()=>{
+        setAuth(false)
+    }, [])
     return (
         <>
             <div className={'container'}>
@@ -18,11 +22,14 @@ function App() {
 
                 <div className="profile">
                     <img src="vite.svg" alt={'users-avatar'}/>
-                    <div className={"profile-info"}>
-                        <span className={'profile-info-name'}>Name</span>&nbsp;<span>Nik</span>
-                        <br/>
-                        <span className={'profile-info-status'}>status:</span>&nbsp;<span>Developer</span>
-                    </div>
+                    {
+                        auth ? <div className={"profile-info"}>
+                            <span className={'profile-info-name'}>Name</span>&nbsp;<span>Nik</span>
+                            <br/>
+                            <span className={'profile-info-status'}>status:</span>&nbsp;<span>Developer</span>
+                        </div> : <h3>Hello, Guest! <Link to={'auth/register'}>Register</Link> or <Link to={'auth/login'}>Login</Link> please.. </h3>
+                    }
+
                 </div>
 
                 {/*Info yourself*/}
