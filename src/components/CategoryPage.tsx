@@ -1,8 +1,11 @@
 import {Link} from "react-router-dom";
-import {useEffect, useState} from "react";
+import {ChangeEvent, useEffect, useState} from "react";
 
 export default function CategoryPage() {
     const [auth, setAuth] = useState(false)
+    const [inputValue, setInputValue] = useState('')
+    const [inputActive, setInputActive] = useState(null)
+    const [inputEditorValue, setInputEditorValue] = useState(null)
 
     const [userData, setUserData] = useState({
         user: {
@@ -42,11 +45,79 @@ export default function CategoryPage() {
             reqCollectionData()
         }
     }, [auth])
+
+    const inputHandler = (e: ChangeEvent<HTMLInputElement>) => {
+        setInputValue(e.target.value)
+    }
+    const inputHandlerC = (e: ChangeEvent<HTMLInputElement>) => {
+        console.log(e.target.value, e.target.name)
+        const inputValue = e.target.value
+       const idx = collections.collection.findIndex((el)=>el.id == e.target.name)
+        setCollections(prevState => {
+            const updatedCollection = [...prevState.collection];
+            updatedCollection[idx].label = inputValue;
+            return { ...prevState, collection: updatedCollection };
+        });
+        console.log(collections)
+    }
+    const saveCategory = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault()
+        if (inputValue.trim().length) {
+            await fetch('http://localhost:3001/collection', {
+                method: 'POST',
+                body: JSON.stringify({label: inputValue, isAdmin: "admin", creatorid: userData.user.id}),
+                headers: {
+                    'Content-type': 'application/json'
+                }
+            })
+            alert('Запрос отправлен. Результат вы увидите после перезагрузки.')
+        } else {
+            alert('Заполните поле корректно')
+        }
+    }
+
+    const updateCategory = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        const idx = collections.collection.findIndex((el)=>el.id == e.target.name)
+        e.preventDefault()
+        if (collections.collection[idx].label) {
+            await fetch('http://localhost:3001/collection', {
+                method: 'PUT',
+                body: JSON.stringify({id: e.target.name, label: collections.collection[idx].label, isAdmin: "admin", creatorid: userData.user.id}),
+                headers: {
+                    'Content-type': 'application/json'
+                }
+            })
+            alert('Запрос отправлен. Результат вы увидите после перезагрузки.')
+        }
+    }
+
+    const deleteCategory = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        const buttonElement = e.currentTarget as HTMLButtonElement;
+        const inputValue = buttonElement.name;
+        console.log(inputValue)
+        e.preventDefault()
+        await fetch('http://localhost:3001/collection', {
+            method: 'DELETE',
+            body: JSON.stringify({id: inputValue, isAdmin: "admin", creatorid: userData.user.id}),
+            headers: {
+                'Content-type': 'application/json'
+            }
+        })
+        alert('Запрос отправлен. Результат вы увидите после перезагрузки.')
+    }
+    const activeCategory = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        const buttonElement = e.currentTarget as HTMLButtonElement;
+        const inputValue = buttonElement.name;
+        console.log(inputValue)
+        e.preventDefault()
+        setInputActive(inputValue)
+    }
+
     return (
         <div>
             <h2>COLLECTION</h2>
-            <input type="text" placeholder={'Collection name'}/>
-            <button>Save</button>
+            <input type="text" placeholder={'Enter name new collection'} onChange={inputHandler}/>
+            <button onClick={saveCategory}>Save</button>
             <Link to={'/'}>
                 <button>Go back</button>
             </Link>
@@ -55,10 +126,10 @@ export default function CategoryPage() {
                 {
                     collections.collection.map((item) => {
                         return (<li key={item.id}>
-                            <button>v</button>
-                            <button>✏</button>
-                            <button>x</button>
-                            <input type="text" value={item.label} disabled={true}/>
+                            <button name={item.id} onClick={updateCategory}>v</button>
+                            <button name={item.id} onClick={activeCategory}>✏</button>
+                            <button name={item.id} onClick={deleteCategory}>x</button>
+                            <input name={item.id} type="text" onChange={inputHandlerC} value={inputEditorValue ?? item.label} disabled={inputActive == item.id ? false : true}/>
                         </li>)
                     })
                 }
