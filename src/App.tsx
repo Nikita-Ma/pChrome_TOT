@@ -57,7 +57,7 @@ function App() {
     const handlerOptions = (e: React.ChangeEvent<HTMLSelectElement>) => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        setActiveOption(e)
+        setActiveOption(e.target.value)
     }
 
 
