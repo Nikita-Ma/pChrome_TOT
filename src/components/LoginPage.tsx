@@ -1,5 +1,6 @@
 import {Link} from "react-router-dom";
-import {ChangeEvent, useState} from "react";
+import {ChangeEvent, useEffect, useState} from "react";
+import {useNavigate} from 'react-router-dom'
 
 export default function LoginPage() {
 
@@ -8,7 +9,27 @@ export default function LoginPage() {
         password: '',
     })
 
-    const handleChange = (e:ChangeEvent<HTMLInputElement>) => {
+
+    const navigate = useNavigate();
+
+
+    useEffect(() => {
+
+        const allCookies = document.cookie;
+
+        const cookieArray = allCookies.split('; ');
+
+        for (let i = 0; i < cookieArray.length; i++) {
+            const cookie = cookieArray[i].split('=');
+            if (cookie[0] === "auth") {
+                navigate('/')
+            }
+        }
+
+    })
+
+
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
 
         const value = e.target.value;
         if (e.target.name === 'email') {
@@ -30,7 +51,7 @@ export default function LoginPage() {
 
     }
 
-    const sendData = async (e:React.MouseEvent<HTMLButtonElement>) => {
+    const sendData = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
 
 
@@ -43,8 +64,7 @@ export default function LoginPage() {
                 }
             })
             const preparedJSON = await fetchUserData.json()
-
-            console.log(preparedJSON)
+            document.cookie = `auth=${JSON.stringify(preparedJSON)}; Secure; Max-Age=864000;`
             alert('OK')
         } else {
             alert('Incorrect data')

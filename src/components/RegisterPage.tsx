@@ -1,5 +1,5 @@
-import {Link} from "react-router-dom";
-import {ChangeEvent, useState} from "react";
+import {Link, useNavigate} from "react-router-dom";
+import {ChangeEvent, useEffect, useState} from "react";
 
 export default function RegisterPage() {
     const [userData, setUserData] = useState({
@@ -7,6 +7,27 @@ export default function RegisterPage() {
         password: '',
         confirmPassword: ''
     })
+
+
+    const navigate = useNavigate();
+
+
+    useEffect(() => {
+
+        const allCookies = document.cookie;
+
+        const cookieArray = allCookies.split('; ');
+
+        for (let i = 0; i < cookieArray.length; i++) {
+            const cookie = cookieArray[i].split('=');
+            if (cookie[0] === "auth") {
+                // const cookieValue = cookie[1];
+                navigate('/')
+            }
+        }
+
+    })
+
 
     const handleChange = (e:ChangeEvent<HTMLInputElement>) => {
 

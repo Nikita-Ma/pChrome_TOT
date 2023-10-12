@@ -7,9 +7,49 @@ import {VERSION} from "../CONSTANTS.ts";
 function App() {
 
     const [auth, setAuth] = useState(false)
-    useEffect(()=>{
-        setAuth(false)
-    }, [])
+    const [userData, setUserData] = useState({
+        user: {
+            nikname: '',
+            email: '',
+            password: '',
+            status: '',
+        }
+    })
+    const [collectionData, setCollectionData] = useState({
+        collections: []
+    })
+
+
+    useEffect(() => {
+
+
+        async function reqCollectionData() {
+            console.log(userData)
+            const fetchCollectionData = await fetch('http://localhost:3001/collection?creatorid=' + userData.user.id)
+            const preparedJSON = await fetchCollectionData.json()
+            setCollectionData({collections: preparedJSON.message})
+        }
+
+        if (userData.user.email == '') {
+            const allCookies = document.cookie;
+
+            const cookieArray = allCookies.split('; ');
+
+            for (let i = 0; i < cookieArray.length; i++) {
+                const cookie = cookieArray[i].split('=');
+                if (cookie[0] === "auth") {
+                    setUserData(JSON.parse(cookie[1]))
+                    setAuth(true)
+                }
+            }
+        }
+
+
+        if (auth) {
+            reqCollectionData()
+        }
+    }, [auth])
+
     return (
         <>
             <div className={'container'}>
@@ -27,10 +67,13 @@ function App() {
                     <img src="vite.svg" alt={'users-avatar'}/>
                     {
                         auth ? <div className={"profile-info"}>
-                            <span className={'profile-info-name'}>Name</span>&nbsp;<span>Nik</span>
+                            <span className={'profile-info-name'}>ID</span>&nbsp;
+                            <span>{userData.user.nikname ?? userData.user.email}</span>
                             <br/>
-                            <span className={'profile-info-status'}>status:</span>&nbsp;<span>Developer</span>
-                        </div> : <h3>Hello, Guest! <Link to={'auth/register'}>Register</Link> or <Link to={'auth/login'}>Login</Link> please.. </h3>
+                            <span className={'profile-info-status'}>status:</span>&nbsp;
+                            <span>{userData.user.status}</span>
+                        </div> : <h3>Hello, Guest! <Link to={'auth/register'}>Register</Link> or <Link
+                            to={'auth/login'}>Login</Link> please.. </h3>
                     }
 
                 </div>
@@ -55,10 +98,17 @@ function App() {
 
                 {/*category*/}
                 <div className={'category category__mainscreen'}>
+
                     <select>
-                        <option value="option1">Категория 1</option>
-                        <option value="option2">Категория 2</option>
+                        {collectionData?.collections.map((item) => {
+                            return (
+                                <>
+                                    <option key={item.id} value="option1">{item.label}</option>
+                                </>
+                            )
+                        })}
                     </select>
+
                     <button>🔁</button>
                     <Link to={'/collection'}>
                         <button>+</button>
