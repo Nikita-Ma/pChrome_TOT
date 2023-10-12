@@ -98,7 +98,7 @@ export default function RegisterPage() {
                 placeholder={'Enter your password'}/>
 
             <button onClick={sendData}>Register</button>
-            <Link to={'auth/login'}>I have account!</Link>
+            <Link to={'/auth/login'}>I have account!</Link>
         </div>
     )
 }

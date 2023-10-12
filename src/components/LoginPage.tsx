@@ -79,7 +79,7 @@ export default function LoginPage() {
 
 
             <button onClick={sendData}>Login</button>
-            <Link to={'auth/login'}>I haven't account!</Link>
+            <Link to={'/auth/register'}>I haven't account!</Link>
 
         </div>
     )
