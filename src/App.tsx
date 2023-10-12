@@ -1,8 +1,11 @@
 import './normalize.css'
 import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
+import {VERSION} from "../CONSTANTS.ts";
+
 
 function App() {
+
     const [auth, setAuth] = useState(false)
     useEffect(()=>{
         setAuth(false)
@@ -14,7 +17,7 @@ function App() {
                 {/*Header*/}
 
                 <div className="header" style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <small style={{fontSize: '10px', marginLeft: '2em'}}>build id</small>
+                    <small style={{fontSize: '10px', marginLeft: '2em'}}>build {VERSION} </small>
                     <img src="vite.svg" alt={'logotype-app'}/>
                 </div>
 
