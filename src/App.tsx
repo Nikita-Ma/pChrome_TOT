@@ -12,12 +12,14 @@ function App() {
             nikname: '',
             email: '',
             password: '',
-            status: '',
+            status: '', id: ""
+
         }
     })
     const [collectionData, setCollectionData] = useState({
         collections: []
     })
+    const [activeOption, setActiveOption] = useState()
 
 
     useEffect(() => {
@@ -28,6 +30,7 @@ function App() {
             const fetchCollectionData = await fetch('http://localhost:3001/collection?creatorid=' + userData.user.id)
             const preparedJSON = await fetchCollectionData.json()
             setCollectionData({collections: preparedJSON.message})
+            setActiveOption(preparedJSON.message[0].id)
         }
 
         if (userData.user.email == '') {
@@ -49,6 +52,14 @@ function App() {
             reqCollectionData()
         }
     }, [auth])
+
+
+    const handlerOptions = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        setActiveOption(e)
+    }
+
 
     return (
         <>
@@ -99,13 +110,11 @@ function App() {
                 {/*category*/}
                 <div className={'category category__mainscreen'}>
 
-                    <select>
+                    <select onChange={handlerOptions}>
                         {collectionData?.collections.map((item) => {
-                            return (
-                                <>
-                                    <option key={item.id} value="option1">{item.label}</option>
-                                </>
-                            )
+                                    {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                                    {/*// @ts-ignore*/}
+                            return <option key={item.id} value={item.id}>{item.label}</option>
                         })}
                     </select>
 
@@ -113,7 +122,7 @@ function App() {
                     <Link to={'/collection'}>
                         <button>+</button>
                     </Link>
-                    <Link to={'/collection/letters'}>
+                    <Link to={'/collection/letters/' + activeOption}>
                         <button>▷</button>
                     </Link>
                 </div>

@@ -25,7 +25,7 @@ const router = createBrowserRouter([
     },
     // TODO: child path don't work. >(
     {
-        path: '/collection/letters',
+        path: '/collection/letters/*',
         element: <DetailsCategory/>,
         errorElement: <ErrorPage/>
     },
