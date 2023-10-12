@@ -1,5 +1,5 @@
 import './normalize.css'
-import './App.css'
+import {Link} from "react-router-dom";
 
 function App() {
 
@@ -49,8 +49,13 @@ function App() {
                         <option value="option1">Категория 1</option>
                         <option value="option2">Категория 2</option>
                     </select>
-                    <button>repeat</button>
-                    <button>+</button>
+                    <button>🔁</button>
+                    <Link to={'/collection'}>
+                        <button>+</button>
+                    </Link>
+                    <Link to={'/collection/letters'}>
+                        <button>▷</button>
+                    </Link>
                 </div>
 
                 {/*Footer*/}
