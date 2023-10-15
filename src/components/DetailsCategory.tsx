@@ -68,12 +68,12 @@ export default function CategoryPage() {
     const inputHandler = (e: ChangeEvent<HTMLInputElement>) => {
 
         if (e.target.name === 'term') {
-           setInputValue(prevState => {
-               return {
-                   ...prevState,
-                   term: e.target.value
-               }
-           })
+            setInputValue(prevState => {
+                return {
+                    ...prevState,
+                    term: e.target.value
+                }
+            })
         }
         if (e.target.name === 'tip') {
             setInputValue(prevState => {
@@ -100,15 +100,14 @@ export default function CategoryPage() {
         if (e.target.id === 'term') {
             // console.log('rr')
             setInputEditorValue((prevState) => {
-                return {...prevState, id: e.target.name, termEditor: e.target.value}
+                return {
+                    ...prevState,
+                    id: e.target.name,
+                    termEditor: e.target.value,
+                    answerEditor: letters.letters[idx].answer,
+                    tipEditor: letters.letters[idx].answer
+                }
             })
-            setLetters(prevState => {
-                const updatedCollection = [...prevState.letters];
-
-                updatedCollection[idx].term = inputValue;
-                return {...prevState, letters: updatedCollection};
-
-            });
 
 
             setLetters(prevState => {
@@ -132,7 +131,13 @@ export default function CategoryPage() {
 
 
             setInputEditorValue((prevState) => {
-                return {...prevState, id: e.target.name, tipEditor: e.target.value}
+                return {
+                    ...prevState,
+                    id: e.target.name,
+                    tipEditor: e.target.value,
+                    termEditor: letters.letters[idx].term,
+                    answerEditor: letters.letters[idx].answer
+                }
             })
 
 
@@ -152,7 +157,13 @@ export default function CategoryPage() {
         // TODO: Incorrect use <... name & id> in project MUST REFACTOR! AND FIX & SETTINGS PRETTIER & ESLINT & HUSKY & CI/CD/>
         if (e.target.id === 'answer') {
             setInputEditorValue((prevState) => {
-                return {...prevState, id: e.target.name, answerEditor: e.target.value}
+                return {
+                    ...prevState,
+                    id: e.target.name,
+                    answerEditor: e.target.value,
+                    tipEditor: e.target.value,
+                    termEditor: letters.letters[idx].term,
+                }
             })
 
             setLetters(prevState => {
