@@ -118,7 +118,7 @@ function App() {
                         })}
                     </select>
 
-                    <button>🔁</button>
+                    <Link to={'/repeat/'+activeOption}><button>🔁</button></Link>
                     <Link to={'/collection'}>
                         <button>+</button>
                     </Link>

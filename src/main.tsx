@@ -11,6 +11,7 @@ import CategoryPage from "./components/CategoryPage.tsx";
 import DetailsCategory from "./components/DetailsCategory.tsx";
 import LoginPage from "./components/LoginPage.tsx";
 import RegisterPage from "./components/RegisterPage.tsx";
+import RepeatPage from "./components/RepeatPage.tsx";
 
 const router = createBrowserRouter([
     {
@@ -27,6 +28,11 @@ const router = createBrowserRouter([
     {
         path: '/collection/letters/*',
         element: <DetailsCategory/>,
+        errorElement: <ErrorPage/>
+    },
+    {
+        path: '/repeat/*',
+        element: <RepeatPage/>,
         errorElement: <ErrorPage/>
     },
     // Auth
