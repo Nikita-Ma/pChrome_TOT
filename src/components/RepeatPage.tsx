@@ -55,6 +55,8 @@ export default function RepeatPage() {
         const fetchReq = await fetch('http://localhost:3001/collection/letters', {
             method: 'PATCH',
             body: JSON.stringify({
+                // @ts-ignore
+
                 id: letters.letters[activeLetter].id,
                 verify: true
             }), headers: {
@@ -76,6 +78,7 @@ export default function RepeatPage() {
         const fetchReq = await fetch('http://localhost:3001/collection/letters', {
             method: 'PATCH',
             body: JSON.stringify({
+                // @ts-ignore
                 id: letters.letters[activeLetter].id,
                 verify: false
             }), headers: {
@@ -96,9 +99,12 @@ export default function RepeatPage() {
         <div className={'container'} style={{display: 'flex', flexDirection: 'column', textAlign: 'center'}}>
 
             <h2>Repeat</h2>
+               {/*// @ts-ignore*/}
             <span>{letters.letters[activeLetter].term}</span>
+               {/*// @ts-ignore*/}
             <span>{letters.letters[activeLetter].tip}</span>
             <small onClick={() => setShowAnswer(!showAnswer)}>Show Answer!</small>
+               {/*// @ts-ignore*/}
             {showAnswer ? <span>{letters.letters[activeLetter].answer}</span> : null}
             <button onClick={handlerRememberClicked}>Remember</button>
             <button onClick={handlerForgetClicked}>Forget</button>

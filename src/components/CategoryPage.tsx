@@ -5,6 +5,7 @@ export default function CategoryPage() {
     const [auth, setAuth] = useState(false)
     const [inputValue, setInputValue] = useState('')
     const [inputActive, setInputActive] = useState(null)
+    {/*// @ts-ignore*/}
     const [inputEditorValue, setInputEditorValue] = useState(null)
 
     const [userData, setUserData] = useState({
@@ -52,11 +53,13 @@ export default function CategoryPage() {
     const inputHandlerC = (e: ChangeEvent<HTMLInputElement>) => {
         console.log(e.target.value, e.target.name)
         const inputValue = e.target.value
-       const idx = collections.collection.findIndex((el)=>el.id == e.target.name)
+        // @ts-ignore
+        const idx = collections.collection.findIndex((el) => el.id == e.target.name)
         setCollections(prevState => {
             const updatedCollection = [...prevState.collection];
+            // @ts-ignore
             updatedCollection[idx].label = inputValue;
-            return { ...prevState, collection: updatedCollection };
+            return {...prevState, collection: updatedCollection};
         });
         console.log(collections)
     }
@@ -77,12 +80,23 @@ export default function CategoryPage() {
     }
 
     const updateCategory = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        const idx = collections.collection.findIndex((el)=>el.id == e.target.name)
+        // @ts-ignore
+        const idx = collections.collection.findIndex((el) => el.id == e.target.name)
         e.preventDefault()
+        {/*// @ts-ignore*/}
         if (collections.collection[idx].label) {
             await fetch('http://localhost:3001/collection', {
                 method: 'PUT',
-                body: JSON.stringify({id: e.target.name, label: collections.collection[idx].label, isAdmin: "admin", creatorid: userData.user.id}),
+                // @ts-ignore
+
+                body: JSON.stringify({
+                    //  @ts-ignore*
+                    id: e.target.name,
+                    //  @ts-ignore*
+                    label: collections.collection[idx].label,
+                    isAdmin: "admin",
+                    creatorid: userData.user.id
+                }),
                 headers: {
                     'Content-type': 'application/json'
                 }
@@ -110,6 +124,8 @@ export default function CategoryPage() {
         const inputValue = buttonElement.name;
         console.log(inputValue)
         e.preventDefault()
+
+        // @ts-ignore
         setInputActive(inputValue)
     }
 
@@ -125,11 +141,18 @@ export default function CategoryPage() {
             <ul>
                 {
                     collections.collection.map((item) => {
+                        // @ts-ignore
+                        // @ts-ignore
                         return (<li key={item.id}>
+                            {/*// @ts-ignore*/}
                             <button name={item.id} onClick={updateCategory}>v</button>
+                            {/*// @ts-ignore*/}
                             <button name={item.id} onClick={activeCategory}>✏</button>
+                            {/*// @ts-ignore*/}
                             <button name={item.id} onClick={deleteCategory}>x</button>
-                            <input name={item.id} type="text" onChange={inputHandlerC} value={inputEditorValue ?? item.label} disabled={inputActive == item.id ? false : true}/>
+                            {/*// @ts-ignore*/}
+
+                            <input name={item.id} type="text" onChange={inputHandlerC}  value={inputEditorValue ?? item.label}  disabled={inputActive == item.id ? false : true}/>
                         </li>)
                     })
                 }

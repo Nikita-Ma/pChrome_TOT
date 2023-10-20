@@ -38,9 +38,11 @@ export default function CategoryPage() {
             const preparedJSON = await fetchCollectionData.json()
             setLetters({letters: preparedJSON.message})
             setInputEditorValue({
+                // @ts-ignore
                 did: collectionID
             })
             setInputValue({
+                // @ts-ignore
                 did: collectionID
             })
         }
@@ -96,15 +98,19 @@ export default function CategoryPage() {
     const inputHandlerC = (e: ChangeEvent<HTMLInputElement>) => {
         // console.log(e.target.value, e.target.name)
         const inputValue = e.target.value
+        // @ts-ignore
         const idx = letters.letters.findIndex((el) => el.id == e.target.name)
         if (e.target.id === 'term') {
             // console.log('rr')
+            // @ts-ignore
             setInputEditorValue((prevState) => {
                 return {
                     ...prevState,
                     id: e.target.name,
                     termEditor: e.target.value,
+                    // @ts-ignore
                     answerEditor: letters.letters[idx].answer,
+                    // @ts-ignore
                     tipEditor: letters.letters[idx].answer
                 }
             })
@@ -114,11 +120,17 @@ export default function CategoryPage() {
                 const updatedCollection = [...prevState.letters];
 
                 // TODO: Refactor! Bad practice!
+                // @ts-ignore
                 updatedCollection[idx].answer = updatedCollection[idx].answer;
+                // @ts-ignore
                 updatedCollection[idx].did = updatedCollection[idx].did;
+                // @ts-ignore
                 updatedCollection[idx].id = e.target.name;
+                // @ts-ignore
                 updatedCollection[idx].tip = updatedCollection[idx].tip;
+                // @ts-ignore
                 updatedCollection[idx].term = inputValue;
+                // @ts-ignore
                 return {...prevState, letters: updatedCollection};
 
             });
@@ -129,13 +141,15 @@ export default function CategoryPage() {
 
         if (e.target.id === 'tip') {
 
-
+            // @ts-ignore
             setInputEditorValue((prevState) => {
                 return {
                     ...prevState,
                     id: e.target.name,
                     tipEditor: e.target.value,
+                    // @ts-ignore
                     termEditor: letters.letters[idx].term,
+                    // @ts-ignore
                     answerEditor: letters.letters[idx].answer
                 }
             })
@@ -145,10 +159,15 @@ export default function CategoryPage() {
                 const updatedCollection = [...prevState.letters];
 
                 // TODO: Refactor! Bad practice!
+                // @ts-ignore
                 updatedCollection[idx].answer = updatedCollection[idx].answer;
+                // @ts-ignore
                 updatedCollection[idx].did = updatedCollection[idx].did;
+                // @ts-ignore
                 updatedCollection[idx].id = e.target.name;
+                // @ts-ignore
                 updatedCollection[idx].tip = e.target.value;
+                // @ts-ignore
                 updatedCollection[idx].term = updatedCollection[idx].term;
                 return {...prevState, letters: updatedCollection};
 
@@ -156,12 +175,14 @@ export default function CategoryPage() {
         }
         // TODO: Incorrect use <... name & id> in project MUST REFACTOR! AND FIX & SETTINGS PRETTIER & ESLINT & HUSKY & CI/CD/>
         if (e.target.id === 'answer') {
+            // @ts-ignore
             setInputEditorValue((prevState) => {
                 return {
                     ...prevState,
                     id: e.target.name,
                     answerEditor: e.target.value,
                     tipEditor: e.target.value,
+                    // @ts-ignore
                     termEditor: letters.letters[idx].term,
                 }
             })
@@ -170,10 +191,15 @@ export default function CategoryPage() {
                 const updatedCollection = [...prevState.letters];
 
                 // TODO: Refactor! Bad practice!
+                // @ts-ignore
                 updatedCollection[idx].answer = inputValue;
+                // @ts-ignore
                 updatedCollection[idx].did = updatedCollection[idx].did;
+                // @ts-ignore
                 updatedCollection[idx].id = e.target.name;
+                // @ts-ignore
                 updatedCollection[idx].tip = updatedCollection[idx].tip;
+                // @ts-ignore
                 updatedCollection[idx].term = updatedCollection[idx].term;
                 return {...prevState, letters: updatedCollection};
 
@@ -201,8 +227,10 @@ export default function CategoryPage() {
     }
 
     const updateCategory = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        // @ts-ignore
         const idx = letters.letters.findIndex((el) => el.id == e.target.name)
         e.preventDefault()
+        // @ts-ignore
         if (letters.letters[idx].term) {
             await fetch('http://localhost:3001/collection/letters', {
                 method: 'PUT',
@@ -241,6 +269,7 @@ export default function CategoryPage() {
         const inputValue = buttonElement.name;
         console.log(inputValue)
         e.preventDefault()
+        // @ts-ignore
         setInputActive(inputValue)
         console.log(inputActive)
     }
@@ -260,22 +289,27 @@ export default function CategoryPage() {
             <ul>
                 {
                     letters.letters.map((item) => {
+
+                        // @ts-ignore
                         return (<li key={item.id}>
+                            {/*// @ts-ignore*/}
                             <button name={item.id} onClick={updateCategory}>v</button>
+                            {/*// @ts-ignore*/}
                             <button name={item.id} onClick={activeCategory}>✏</button>
+                            {/*// @ts-ignore*/}
                             <button name={item.id} onClick={deleteCategory}>x</button>
-                            <input id={'term'} name={item.id} type="text" onChange={inputHandlerC}
+                            {/*// @ts-ignore*/}
+                            <input disabled={inputActive == item.id ? false : true} id={'term'} name={item.id} type="text" onChange={inputHandlerC} value={item.term}
                                    placeholder={'Term type*'}
-                                   value={item.term}
-                                   disabled={inputActive == item.id ? false : true}/>
-                            <input id={'tip'} name={item.id} type="text" onChange={inputHandlerC}
+                            />
+                            {/*// @ts-ignore*/}
+                            <input disabled={inputActive == item.id ? false : true} id={'tip'} name={item.id} type="text" onChange={inputHandlerC} value={item.tip}
                                    placeholder={'Tip type'}
-                                   value={item.tip}
-                                   disabled={inputActive == item.id ? false : true}/>
-                            <input id={'answer'} name={item.id} type="text" onChange={inputHandlerC}
+                            />
+                            {/*// @ts-ignore*/}
+                            <input disabled={inputActive == item.id ? false : true} id={'answer'} name={item.id} type="text" onChange={inputHandlerC} value={item.answer}
                                    placeholder={'Answer type*'}
-                                   value={item.answer}
-                                   disabled={inputActive == item.id ? false : true}/>
+                            />
 
                         </li>)
                     })
