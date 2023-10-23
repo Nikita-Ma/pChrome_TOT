@@ -40,11 +40,11 @@ function App() {
     const [auth, setAuth] = useState<Boolean>(false)
     const [userData, setUserData] = useState<IUser>({
         user: {
-            nickname:  null,
-            email:  null,
-            password:  null,
-            status:  null,
-            id:  null
+            nickname: null,
+            email: null,
+            password: null,
+            status: null,
+            id: null
         }
     })
     const [collectionData, setCollectionData] = useState<ICollection | undefined>()
@@ -56,7 +56,6 @@ function App() {
 
         async function reqCollectionData() {
             try {
-                console.log(userData);
                 const fetchCollectionData = await fetch('http://localhost:3001/collection?creatorid=' + userData.user.id);
                 if (!fetchCollectionData.ok) {
                     alert('Network response was not ok');
@@ -82,9 +81,14 @@ function App() {
 
         async function verifyAuth(): Promise<void> {
             const authStatus = await getLocalStorage('user')
+            if (Object.keys(authStatus).length == 2) {
+                setUserData({user: authStatus} as IUser)
+                // TODO: Realize Fetch req
+            }
             if (authStatus && authStatus !== true) {
                 setAuth(true)
                 if (compareObjectsEqualKeys(authStatus, userData)) {
+                    console.log('прошло')
                     setUserData({user: authStatus} as IUser)
                 }
             }
@@ -95,7 +99,7 @@ function App() {
         if (auth) {
             reqCollectionData().then(r => console.log('Request completed', r))
         }
-    }, [auth])
+    }, [])
 
 
     const handlerOptions = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -119,12 +123,12 @@ function App() {
                 <div className="profile">
                     <img src="vite.svg" alt={'users-avatar'}/>
                     {
-                        auth ? <div className={"profile-info"}>
+                        userData.user.email ? <div className={"profile-info"}>
                             <span className={'profile-info-name'}>ID</span>&nbsp;
-                            <span>{userData.user.nickname ?? userData.user.email}</span>
+                            <span>{userData.user.nickname == null ? userData.user.email : userData.user.nickname}</span>
                             <br/>
                             <span className={'profile-info-status'}>status:</span>&nbsp;
-                            <span>{userData.user.status}</span>
+                            <span>{userData.user.status ?? 'guest'}</span>
                         </div> : <h3>Hello, Guest! <Link to={'auth/register'}>Register</Link> or <Link
                             to={'auth/login'}>Login</Link> please.. </h3>
                     }
