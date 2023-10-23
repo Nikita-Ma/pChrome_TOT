@@ -1,5 +1,10 @@
 import {Link, useNavigate} from "react-router-dom";
 import {ChangeEvent, useEffect, useState} from "react";
+import {getLocalStorage} from "../utils/localStorage/getLocalStorage.ts";
+import {setLocalStorage} from "../utils/localStorage/setLocalStorage.ts";
+
+
+
 
 export default function RegisterPage() {
     const [userData, setUserData] = useState({
@@ -14,22 +19,22 @@ export default function RegisterPage() {
 
     useEffect(() => {
 
-        const allCookies = document.cookie;
-
-        const cookieArray = allCookies.split('; ');
-
-        for (let i = 0; i < cookieArray.length; i++) {
-            const cookie = cookieArray[i].split('=');
-            if (cookie[0] === "auth") {
-                // const cookieValue = cookie[1];
+        async function verifyAuth(): Promise<void> {
+            const authStatus = await getLocalStorage('user')
+            if (authStatus && authStatus !== true) {
                 navigate('/')
             }
         }
 
-    })
+        verifyAuth().then(r => {
+            console.log('Request completed' + r)
+        })
 
 
-    const handleChange = (e:ChangeEvent<HTMLInputElement>) => {
+    }, [])
+
+
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
 
         const value = e.target.value;
         if (e.target.name === 'email') {
@@ -59,7 +64,7 @@ export default function RegisterPage() {
 
     }
 
-    const sendData = async (e:React.MouseEvent<HTMLButtonElement>) => {
+    const sendData = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
 
 
@@ -74,7 +79,10 @@ export default function RegisterPage() {
             const preparedJSON = await fetchUserData.json()
 
             console.log(preparedJSON)
-            alert('OK')
+            alert(fetchUserData.status)
+            if (fetchUserData.status == 201) {
+                setLocalStorage('user', {email: userData.email, password: userData.confirmPassword})
+            }
         } else {
             alert('Incorrect data')
         }
