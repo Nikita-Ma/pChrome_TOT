@@ -2,61 +2,103 @@ import './normalize.css'
 import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {VERSION} from "../CONSTANTS.ts";
+import {getLocalStorage} from "./utils/localStorage/getLocalStorage.ts";
+import {compareObjectsEqualKeys} from "./utils/compare/compareObjectsEqualKeys.ts";
 
+interface IUser {
+    user: {
+        nickname: null | string,
+        email: null | string,
+        password: null | string,
+        status: null | string,
+        id: null | string
+    }
+}
+
+interface ICollection {
+    collections: {
+        id: null | string,
+        label: null | string,
+        creatorid: null | string,
+        repeated: null | string,
+        date: null | string
+    }[] | undefined
+}
+
+interface IJSONCollection {
+    message: {
+        id: null | string,
+        label: null | string,
+        creatorid: null | string,
+        repeated: null | string,
+        date: null | string
+    }[]
+}
 
 function App() {
 
-    const [auth, setAuth] = useState(false)
-    const [userData, setUserData] = useState({
+    const [auth, setAuth] = useState<Boolean>(false)
+    const [userData, setUserData] = useState<IUser>({
         user: {
-            nikname: '',
-            email: '',
-            password: '',
-            status: '', id: ""
-
+            nickname:  null,
+            email:  null,
+            password:  null,
+            status:  null,
+            id:  null
         }
     })
-    const [collectionData, setCollectionData] = useState({
-        collections: []
-    })
-    const [activeOption, setActiveOption] = useState()
+    const [collectionData, setCollectionData] = useState<ICollection | undefined>()
+    const [activeOption, setActiveOption] = useState<string | null>()
 
 
     useEffect(() => {
 
 
         async function reqCollectionData() {
-            console.log(userData)
-            const fetchCollectionData = await fetch('http://localhost:3001/collection?creatorid=' + userData.user.id)
-            const preparedJSON = await fetchCollectionData.json()
-            setCollectionData({collections: preparedJSON.message})
-            setActiveOption(preparedJSON.message[0].id)
-        }
-
-        if (userData.user.email == '') {
-            const allCookies = document.cookie;
-
-            const cookieArray = allCookies.split('; ');
-
-            for (let i = 0; i < cookieArray.length; i++) {
-                const cookie = cookieArray[i].split('=');
-                if (cookie[0] === "auth") {
-                    setUserData(JSON.parse(cookie[1]))
-                    setAuth(true)
+            try {
+                console.log(userData);
+                const fetchCollectionData = await fetch('http://localhost:3001/collection?creatorid=' + userData.user.id);
+                if (!fetchCollectionData.ok) {
+                    alert('Network response was not ok');
+                    return;
                 }
+
+                const preparedJSON: IJSONCollection = await fetchCollectionData.json();
+
+
+                if (!preparedJSON.message) {
+                    setCollectionData({collections: undefined});
+                }
+
+
+                if (collectionData?.collections !== undefined) {
+                    setActiveOption(collectionData?.collections[0]?.id || null);
+                }
+            } catch (error) {
+                console.error('Error fetching collection data:', error);
             }
         }
 
 
+        async function verifyAuth(): Promise<void> {
+            const authStatus = await getLocalStorage('user')
+            if (authStatus && authStatus !== true) {
+                setAuth(true)
+                if (compareObjectsEqualKeys(authStatus, userData)) {
+                    setUserData({user: authStatus} as IUser)
+                }
+            }
+        }
+
+        verifyAuth().then(r => console.log('Verify completed', r))
+
         if (auth) {
-            reqCollectionData()
+            reqCollectionData().then(r => console.log('Request completed', r))
         }
     }, [auth])
 
 
     const handlerOptions = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         setActiveOption(e.target.value)
     }
 
@@ -79,7 +121,7 @@ function App() {
                     {
                         auth ? <div className={"profile-info"}>
                             <span className={'profile-info-name'}>ID</span>&nbsp;
-                            <span>{userData.user.nikname ?? userData.user.email}</span>
+                            <span>{userData.user.nickname ?? userData.user.email}</span>
                             <br/>
                             <span className={'profile-info-status'}>status:</span>&nbsp;
                             <span>{userData.user.status}</span>
@@ -91,13 +133,13 @@ function App() {
 
                 {/*Info yourself*/}
 
-                <div className="statistics">
-                    <ul>
-                        <li>Количество слов:</li>
-                        <li>Количество выученных слов:</li>
-                        <li>Количество колод:</li>
-                    </ul>
-                </div>
+                {/*<div className="statistics">*/}
+                {/*    <ul>*/}
+                {/*        <li>Количество слов:</li>*/}
+                {/*        <li>Количество выученных слов:</li>*/}
+                {/*        <li>Количество колод:</li>*/}
+                {/*    </ul>*/}
+                {/*</div>*/}
 
                 {/*Btn utils*/}
 
@@ -111,14 +153,14 @@ function App() {
                 <div className={'category category__mainscreen'}>
 
                     <select onChange={handlerOptions}>
-                        {collectionData?.collections.map((item) => {
-                                    {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-                                    {/*// @ts-ignore*/}
-                            return <option key={item.id} value={item.id}>{item.label}</option>
-                        })}
+                        {collectionData?.collections !== undefined ? collectionData?.collections.map((item) => {
+                            return <option key={item.id} value={item.id || ''}>{item.label}</option>
+                        }) : null}
                     </select>
 
-                    <Link to={'/repeat/'+activeOption}><button>🔁</button></Link>
+                    <Link to={'/repeat/' + activeOption}>
+                        <button>🔁</button>
+                    </Link>
                     <Link to={'/collection'}>
                         <button>+</button>
                     </Link>
