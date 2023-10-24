@@ -1,4 +1,4 @@
-export function getLocalStorage(key: string): Promise<Object | boolean> {
+export function getLocalStorage(key: string): Promise<Object | boolean | string> {
     return new Promise((resolve) => {
         chrome.storage.local.get(key, (result) => {
             const value = result[key];

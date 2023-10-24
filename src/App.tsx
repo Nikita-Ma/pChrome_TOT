@@ -76,6 +76,8 @@ function App() {
                     setCollectionData({collections: undefined});
                 }
 
+                setCollectionData({collections: preparedJSON.message})
+                setLocalStorage('category', {categoryDid:  preparedJSON.message[0]?.id})
 
                 if (collectionData?.collections !== undefined) {
                     setActiveOption(collectionData?.collections[0]?.id || null);
@@ -114,6 +116,7 @@ function App() {
                         deleteChromeStorage('user')
                         setUserData({user: allUserDataJSON.message})
                         setLocalStorage('user', allUserDataJSON.message)
+                        setAuth(true)
                     }
                 }
 
@@ -125,6 +128,8 @@ function App() {
                     console.log('113 str| after set', userData)
                 }
 
+
+
             } else {
                 console.log('Invalid data in storage')
             }
@@ -133,15 +138,22 @@ function App() {
         verifyAuth().then(r => console.log('Verify completed', r))
 
         if (auth) {
-            reqCollectionData().then(r => console.log('Request completed', r))
+            reqCollectionData().then(r => {
+                console.log('Request completed', r)
+            } )
         }
-    }, [])
+    }, [auth])
 
 
     const handlerOptions = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setActiveOption(e.target.value)
+        console.log(e.target.value)
+        deleteChromeStorage('category')
+        if (collectionData?.collections === undefined || collectionData?.collections[0].id === undefined) {
+            return false
+        }
+        setLocalStorage('category', {categoryDid: e.target.value ?? collectionData?.collections[0].id})
+        setActiveOption(e.target.value ?? collectionData?.collections[0].id)
     }
-
 
     return (
         <>
@@ -193,7 +205,7 @@ function App() {
                 <div className={'category category__mainscreen'}>
 
                     <select onChange={handlerOptions}>
-                        {collectionData?.collections !== undefined ? collectionData?.collections.map((item) => {
+                        {collectionData?.collections && collectionData?.collections[0]?.id ? collectionData?.collections.map((item) => {
                             return <option key={item.id} value={item.id || ''}>{item.label}</option>
                         }) : null}
                     </select>

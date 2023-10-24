@@ -1,16 +1,54 @@
 import {Link} from "react-router-dom";
 import {ChangeEvent, useEffect, useState} from "react";
+import {getLocalStorage} from "../utils/localStorage/getLocalStorage.ts";
+
+
+interface IUser {
+    user: {
+        nickname: null | string,
+        email: null | string,
+        password: null | string,
+        status: null | string,
+        id: null | string
+    }
+}
+
+
+interface IInputValue {
+    did: string | null,
+    term: string,
+    tip: string,
+    answer: string,
+}
+
+interface IInputEditorValue {
+    id: null | string,
+    did: null | string,
+    termEditor: null | string,
+    tipEditor: null | string,
+    answerEditor: null | string
+}
+
+interface ILetters {
+    letters: {
+        did: null | string,
+        term: null | string,
+        id: null | string,
+        tip: null | string,
+        answer: null | string
+    }[]
+}
 
 export default function CategoryPage() {
-    const [auth, setAuth] = useState(false)
-    const [inputValue, setInputValue] = useState({
-        did: null,
+    const [auth, setAuth] = useState<Boolean>(false)
+    const [inputValue, setInputValue] = useState<IInputValue>({
+        did: '',
         term: '',
         tip: '',
         answer: '',
     })
-    const [inputActive, setInputActive] = useState(null)
-    const [inputEditorValue, setInputEditorValue] = useState({
+    const [inputActive, setInputActive] = useState<string | null>(null)
+    const [inputEditorValue, setInputEditorValue] = useState<IInputEditorValue>({
         id: null,
         did: null,
         termEditor: null,
@@ -18,52 +56,54 @@ export default function CategoryPage() {
         answerEditor: null
     })
 
-    const [userData, setUserData] = useState({
+    const [userData, setUserData] = useState<IUser>({
         user: {
-            nikname: '',
-            email: '',
-            password: '',
-            status: '', id: ""
-
+            nickname: null,
+            email: null,
+            password: null,
+            status: null,
+            id: null
         }
     })
-    const [letters, setLetters] = useState({
-        letters: [{}]
+
+    const [letters, setLetters] = useState<ILetters>({
+        letters: []
     })
     useEffect(() => {
 
         async function reqCollectionLettersData() {
-            const collectionID = location.href.split("/")[5]
-            const fetchCollectionData = await fetch('http://localhost:3001/collection/' + collectionID)
+            const collectionID = await getLocalStorage('category')
+
+            // @ts-ignore
+            const fetchCollectionData = await fetch('http://localhost:3001/collection/' + collectionID.categoryDid)
             const preparedJSON = await fetchCollectionData.json()
+
+            setInputEditorValue(prevState => {
+                return {
+                    ...prevState,
+                }
+            })
+            setInputValue(prevState => {
+                return {
+                    ...prevState,
+                }
+            })
             setLetters({letters: preparedJSON.message})
-            setInputEditorValue({
-                // @ts-ignore
-                did: collectionID
-            })
-            setInputValue({
-                // @ts-ignore
-                did: collectionID
-            })
         }
 
-        if (userData.user.email == '') {
-            const allCookies = document.cookie;
-
-            const cookieArray = allCookies.split('; ');
-
-            for (let i = 0; i < cookieArray.length; i++) {
-                const cookie = cookieArray[i].split('=');
-                if (cookie[0] === "auth") {
-                    setUserData(JSON.parse(cookie[1]))
-                    setAuth(true)
-                }
+        async function verifyAuth(): Promise<void> {
+            const authStatus = await getLocalStorage('user')
+            if (authStatus && authStatus !== true) {
+                setAuth(true)
+                setUserData({user: authStatus} as IUser)
             }
         }
 
+        verifyAuth().then(r => console.log('Verify completed', r))
+
 
         if (auth) {
-            reqCollectionLettersData()
+            reqCollectionLettersData().then(r => console.log('Completed req. function', r))
         }
     }, [auth])
 
@@ -96,21 +136,15 @@ export default function CategoryPage() {
 
     }
     const inputHandlerC = (e: ChangeEvent<HTMLInputElement>) => {
-        // console.log(e.target.value, e.target.name)
         const inputValue = e.target.value
-        // @ts-ignore
         const idx = letters.letters.findIndex((el) => el.id == e.target.name)
         if (e.target.id === 'term') {
-            // console.log('rr')
-            // @ts-ignore
             setInputEditorValue((prevState) => {
                 return {
                     ...prevState,
                     id: e.target.name,
                     termEditor: e.target.value,
-                    // @ts-ignore
                     answerEditor: letters.letters[idx].answer,
-                    // @ts-ignore
                     tipEditor: letters.letters[idx].answer
                 }
             })
@@ -120,17 +154,11 @@ export default function CategoryPage() {
                 const updatedCollection = [...prevState.letters];
 
                 // TODO: Refactor! Bad practice!
-                // @ts-ignore
                 updatedCollection[idx].answer = updatedCollection[idx].answer;
-                // @ts-ignore
                 updatedCollection[idx].did = updatedCollection[idx].did;
-                // @ts-ignore
                 updatedCollection[idx].id = e.target.name;
-                // @ts-ignore
                 updatedCollection[idx].tip = updatedCollection[idx].tip;
-                // @ts-ignore
                 updatedCollection[idx].term = inputValue;
-                // @ts-ignore
                 return {...prevState, letters: updatedCollection};
 
             });
@@ -141,15 +169,12 @@ export default function CategoryPage() {
 
         if (e.target.id === 'tip') {
 
-            // @ts-ignore
             setInputEditorValue((prevState) => {
                 return {
                     ...prevState,
                     id: e.target.name,
                     tipEditor: e.target.value,
-                    // @ts-ignore
                     termEditor: letters.letters[idx].term,
-                    // @ts-ignore
                     answerEditor: letters.letters[idx].answer
                 }
             })
@@ -159,15 +184,10 @@ export default function CategoryPage() {
                 const updatedCollection = [...prevState.letters];
 
                 // TODO: Refactor! Bad practice!
-                // @ts-ignore
                 updatedCollection[idx].answer = updatedCollection[idx].answer;
-                // @ts-ignore
                 updatedCollection[idx].did = updatedCollection[idx].did;
-                // @ts-ignore
                 updatedCollection[idx].id = e.target.name;
-                // @ts-ignore
                 updatedCollection[idx].tip = e.target.value;
-                // @ts-ignore
                 updatedCollection[idx].term = updatedCollection[idx].term;
                 return {...prevState, letters: updatedCollection};
 
@@ -175,14 +195,12 @@ export default function CategoryPage() {
         }
         // TODO: Incorrect use <... name & id> in project MUST REFACTOR! AND FIX & SETTINGS PRETTIER & ESLINT & HUSKY & CI/CD/>
         if (e.target.id === 'answer') {
-            // @ts-ignore
             setInputEditorValue((prevState) => {
                 return {
                     ...prevState,
                     id: e.target.name,
                     answerEditor: e.target.value,
                     tipEditor: e.target.value,
-                    // @ts-ignore
                     termEditor: letters.letters[idx].term,
                 }
             })
@@ -191,15 +209,10 @@ export default function CategoryPage() {
                 const updatedCollection = [...prevState.letters];
 
                 // TODO: Refactor! Bad practice!
-                // @ts-ignore
                 updatedCollection[idx].answer = inputValue;
-                // @ts-ignore
                 updatedCollection[idx].did = updatedCollection[idx].did;
-                // @ts-ignore
                 updatedCollection[idx].id = e.target.name;
-                // @ts-ignore
                 updatedCollection[idx].tip = updatedCollection[idx].tip;
-                // @ts-ignore
                 updatedCollection[idx].term = updatedCollection[idx].term;
                 return {...prevState, letters: updatedCollection};
 
@@ -208,14 +221,24 @@ export default function CategoryPage() {
 
         }
 
-        // console.log(letters)
     }
     const saveLetter = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
+        console.log('...inputValue', {...inputValue})
         if (inputValue.term.trim().length || inputValue.answer.trim().length) {
+            // @ts-ignore
+            const categ = await getLocalStorage('category')
+            // @ts-ignore
+            alert(categ)
+            console.log(categ)
+            // @ts-ignore
+            console.log(categ.categoryDid)
+            // @ts-ignore
+            alert(categ.categoryDid)
             await fetch('http://localhost:3001/collection/letter', {
                 method: 'POST',
-                body: JSON.stringify({...inputValue, isAdmin: "admin", creatorid: userData.user.id}),
+            // @ts-ignore
+                body: JSON.stringify({...inputValue, isAdmin: "admin", creatorid: userData.user.id, did: categ.categoryDid}),
                 headers: {
                     'Content-type': 'application/json'
                 }
@@ -227,10 +250,10 @@ export default function CategoryPage() {
     }
 
     const updateCategory = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        // @ts-ignore
-        const idx = letters.letters.findIndex((el) => el.id == e.target.name)
+        const buttonElement = e.target as HTMLButtonElement;
+
+        const idx = letters.letters.findIndex((el) => el.id == buttonElement.name)
         e.preventDefault()
-        // @ts-ignore
         if (letters.letters[idx].term) {
             await fetch('http://localhost:3001/collection/letters', {
                 method: 'PUT',
@@ -267,11 +290,8 @@ export default function CategoryPage() {
     const activeCategory = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         const buttonElement = e.currentTarget as HTMLButtonElement;
         const inputValue = buttonElement.name;
-        console.log(inputValue)
         e.preventDefault()
-        // @ts-ignore
         setInputActive(inputValue)
-        console.log(inputActive)
     }
 
     return (
@@ -287,32 +307,28 @@ export default function CategoryPage() {
             </Link>
             <h4>Collection list</h4>
             <ul>
-                {
+                {letters.letters.length ?
                     letters.letters.map((item) => {
 
-                        // @ts-ignore
                         return (<li key={item.id}>
-                            {/*// @ts-ignore*/}
-                            <button name={item.id} onClick={updateCategory}>v</button>
-                            {/*// @ts-ignore*/}
-                            <button name={item.id} onClick={activeCategory}>✏</button>
-                            {/*// @ts-ignore*/}
-                            <button name={item.id} onClick={deleteCategory}>x</button>
-                            {/*// @ts-ignore*/}
-                            <input disabled={inputActive == item.id ? false : true} id={'term'} name={item.id} type="text" onChange={inputHandlerC} value={item.term}
+                            <button name={item.id || ''} onClick={updateCategory}>v</button>
+                            <button name={item.id || ''} onClick={activeCategory}>✏</button>
+                            <button name={item.id || ''} onClick={deleteCategory}>x</button>
+                            <input disabled={inputActive == item.id ? false : true} id={'term'} name={item.id || ''}
+                                   type="text" onChange={inputHandlerC} value={item.term || ''}
                                    placeholder={'Term type*'}
                             />
-                            {/*// @ts-ignore*/}
-                            <input disabled={inputActive == item.id ? false : true} id={'tip'} name={item.id} type="text" onChange={inputHandlerC} value={item.tip}
+                            <input disabled={inputActive == item.id ? false : true} id={'tip'} name={item.id || ''}
+                                   type="text" onChange={inputHandlerC} value={item.tip || ''}
                                    placeholder={'Tip type'}
                             />
-                            {/*// @ts-ignore*/}
-                            <input disabled={inputActive == item.id ? false : true} id={'answer'} name={item.id} type="text" onChange={inputHandlerC} value={item.answer}
+                            <input disabled={inputActive == item.id ? false : true} id={'answer'} name={item.id || ''}
+                                   type="text" onChange={inputHandlerC} value={item.answer || ''}
                                    placeholder={'Answer type*'}
                             />
 
                         </li>)
-                    })
+                    }) : null
                 }
             </ul>
         </div>
