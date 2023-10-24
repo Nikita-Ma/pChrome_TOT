@@ -3,7 +3,8 @@ import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {VERSION} from "../CONSTANTS.ts";
 import {getLocalStorage} from "./utils/localStorage/getLocalStorage.ts";
-import {compareObjectsEqualKeys} from "./utils/compare/compareObjectsEqualKeys.ts";
+import {deleteChromeStorage} from "./utils/localStorage/deleteChromeStorage.ts";
+import {setLocalStorage} from "./utils/localStorage/setLocalStorage.ts";
 
 interface IUser {
     user: {
@@ -11,7 +12,10 @@ interface IUser {
         email: null | string,
         password: null | string,
         status: null | string,
-        id: null | string
+        id: null | number,
+        secret_word: null | string,
+        banned: null | boolean,
+        date: null | string
     }
 }
 
@@ -44,7 +48,10 @@ function App() {
             email: null,
             password: null,
             status: null,
-            id: null
+            id: null,
+            secret_word: null,
+            banned: null,
+            date: null
         }
     })
     const [collectionData, setCollectionData] = useState<ICollection | undefined>()
@@ -80,17 +87,46 @@ function App() {
 
 
         async function verifyAuth(): Promise<void> {
-            const authStatus = await getLocalStorage('user')
-            if (Object.keys(authStatus).length == 2) {
-                setUserData({user: authStatus} as IUser)
-                // TODO: Realize Fetch req
-            }
-            if (authStatus && authStatus !== true) {
-                setAuth(true)
-                if (compareObjectsEqualKeys(authStatus, userData)) {
-                    console.log('прошло')
-                    setUserData({user: authStatus} as IUser)
+            const authStatusRaw = await getLocalStorage('user');
+
+
+            if (typeof authStatusRaw === 'object' && authStatusRaw !== null) {
+                const authStatus: IUser = authStatusRaw as IUser;
+
+                if (Object.keys(authStatus).length == 2) {
+                    const fetchOBJ: any = {
+                        // @ts-ignore TODO
+                        email: authStatus.email,
+                        // @ts-ignore  TODO
+                        password: authStatus.password,
+                        isAdmin: 'admin',
+                    };
+                    // TODO: Refactor bad practice setState (in this situation)
+                    const allUserData = await fetch('http://localhost:3002/auth/login', {
+                        method: "POST",
+                        body: JSON.stringify(fetchOBJ),
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                    const allUserDataJSON = await allUserData.json()
+                    if (allUserData.ok) {
+                        deleteChromeStorage('user')
+                        setUserData({user: allUserDataJSON.message})
+                        setLocalStorage('user', allUserDataJSON.message)
+                    }
                 }
+
+
+                if (authStatusRaw && authStatusRaw !== true) {
+                    setAuth(true)
+                    // @ts-ignore TODO
+                    setUserData({user: authStatus})
+                    console.log('113 str| after set', userData)
+                }
+
+            } else {
+                console.log('Invalid data in storage')
             }
         }
 
@@ -123,7 +159,7 @@ function App() {
                 <div className="profile">
                     <img src="vite.svg" alt={'users-avatar'}/>
                     {
-                        userData.user.email ? <div className={"profile-info"}>
+                        userData.user.id ? <div className={"profile-info"}>
                             <span className={'profile-info-name'}>ID</span>&nbsp;
                             <span>{userData.user.nickname == null ? userData.user.email : userData.user.nickname}</span>
                             <br/>
