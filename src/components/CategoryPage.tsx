@@ -1,49 +1,92 @@
 import {Link} from "react-router-dom";
 import {ChangeEvent, useEffect, useState} from "react";
+import {getLocalStorage} from "../utils/localStorage/getLocalStorage.ts";
+
+interface IUser {
+    user: {
+        nickname: null | string,
+        email: null | string,
+        password: null | string,
+        status: null | string,
+        id: null | string
+    }
+}
+
+interface ICollection {
+    collections: {
+        id: null | string,
+        label: null | string,
+        creatorid: null | string,
+        repeated: null | string,
+        date: null | string
+    }[] | undefined
+}
+
+interface IJSONCollection {
+    message: {
+        id: null | string,
+        label: null | string,
+        creatorid: null | string,
+        repeated: null | string,
+        date: null | string
+    }[]
+}
 
 export default function CategoryPage() {
-    const [auth, setAuth] = useState(false)
     const [inputValue, setInputValue] = useState('')
-    const [inputActive, setInputActive] = useState(null)
-    {/*// @ts-ignore*/}
-    const [inputEditorValue, setInputEditorValue] = useState(null)
+    const [inputActive, setInputActive] = useState<string | null>(null)
+    // const [inputEditorValue, setInputEditorValue] = useState(null)
 
-    const [userData, setUserData] = useState({
+    const [auth, setAuth] = useState<Boolean>(false)
+    const [userData, setUserData] = useState<IUser>({
         user: {
-            nikname: '',
-            email: '',
-            password: '',
-            status: '', id: ""
-
+            nickname: null,
+            email: null,
+            password: null,
+            status: null,
+            id: null
         }
     })
-    const [collections, setCollections] = useState({collection: [{}]})
+    const [collectionData, setCollectionData] = useState<ICollection | undefined>()
+
     useEffect(() => {
 
+
         async function reqCollectionData() {
-
-            const fetchCollectionData = await fetch('http://localhost:3001/collection?creatorid=' + userData.user.id)
-            const preparedJSON = await fetchCollectionData.json()
-            setCollections({collection: preparedJSON.message})
-        }
-
-        if (userData.user.email == '') {
-            const allCookies = document.cookie;
-
-            const cookieArray = allCookies.split('; ');
-
-            for (let i = 0; i < cookieArray.length; i++) {
-                const cookie = cookieArray[i].split('=');
-                if (cookie[0] === "auth") {
-                    setUserData(JSON.parse(cookie[1]))
-                    setAuth(true)
+            try {
+                console.log(userData);
+                const fetchCollectionData = await fetch('http://localhost:3001/collection?creatorid=' + userData.user.id);
+                if (!fetchCollectionData.ok) {
+                    alert('Network response was not ok');
+                    return;
                 }
+
+                const preparedJSON: IJSONCollection = await fetchCollectionData.json();
+
+
+                if (!preparedJSON.message) {
+                    setCollectionData({collections: undefined});
+                }
+
+                setCollectionData({collections: preparedJSON.message})
+            } catch (error) {
+                console.error('Error fetching collection data:', error);
             }
         }
 
 
+        async function verifyAuth(): Promise<void> {
+            const authStatus = await getLocalStorage('user')
+            if (authStatus && authStatus !== true) {
+                setAuth(true)
+                setUserData({user: authStatus} as IUser)
+            }
+        }
+
+        verifyAuth().then(r => console.log('Verify completed', r))
+
         if (auth) {
-            reqCollectionData()
+            reqCollectionData().then(r => console.log('Request completed', r))
         }
     }, [auth])
 
@@ -53,15 +96,16 @@ export default function CategoryPage() {
     const inputHandlerC = (e: ChangeEvent<HTMLInputElement>) => {
         console.log(e.target.value, e.target.name)
         const inputValue = e.target.value
-        // @ts-ignore
-        const idx = collections.collection.findIndex((el) => el.id == e.target.name)
-        setCollections(prevState => {
-            const updatedCollection = [...prevState.collection];
-            // @ts-ignore
+        const idx = collectionData?.collections?.findIndex((el) => el.id == e.target.name)
+        setCollectionData(prevState => {
+            if (prevState === undefined || idx === undefined || prevState.collections === undefined) {
+                return;
+            }
+            const updatedCollection = [...prevState.collections];
             updatedCollection[idx].label = inputValue;
             return {...prevState, collection: updatedCollection};
         });
-        console.log(collections)
+        console.log(collectionData)
     }
     const saveCategory = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
@@ -80,20 +124,22 @@ export default function CategoryPage() {
     }
 
     const updateCategory = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        // @ts-ignore
-        const idx = collections.collection.findIndex((el) => el.id == e.target.name)
+        const buttonElement = e.currentTarget as HTMLButtonElement;
+        const inputValue = buttonElement.name;
+        const idx = collectionData?.collections?.findIndex((el) => el.id == inputValue)
         e.preventDefault()
-        {/*// @ts-ignore*/}
-        if (collections.collection[idx].label) {
+
+        if (collectionData === undefined || idx === undefined || collectionData.collections === undefined) {
+            return;
+        }
+
+        if (collectionData.collections[idx].label) {
             await fetch('http://localhost:3001/collection', {
                 method: 'PUT',
-                // @ts-ignore
 
                 body: JSON.stringify({
-                    //  @ts-ignore*
-                    id: e.target.name,
-                    //  @ts-ignore*
-                    label: collections.collection[idx].label,
+                    label: collectionData.collections[idx].label,
+                    id: inputValue,
                     isAdmin: "admin",
                     creatorid: userData.user.id
                 }),
@@ -125,7 +171,6 @@ export default function CategoryPage() {
         console.log(inputValue)
         e.preventDefault()
 
-        // @ts-ignore
         setInputActive(inputValue)
     }
 
@@ -140,21 +185,18 @@ export default function CategoryPage() {
             <h4>Collection list</h4>
             <ul>
                 {
-                    collections.collection.map((item) => {
-                        // @ts-ignore
-                        // @ts-ignore
-                        return (<li key={item.id}>
-                            {/*// @ts-ignore*/}
-                            <button name={item.id} onClick={updateCategory}>v</button>
-                            {/*// @ts-ignore*/}
-                            <button name={item.id} onClick={activeCategory}>✏</button>
-                            {/*// @ts-ignore*/}
-                            <button name={item.id} onClick={deleteCategory}>x</button>
-                            {/*// @ts-ignore*/}
+                    collectionData !== undefined && collectionData.collections !== undefined ?
+                        collectionData?.collections.map((item) => {
+                            return (<li key={item.id}>
+                                <button name={item.id || ''} onClick={updateCategory}>v</button>
+                                <button name={item.id || ''} onClick={activeCategory}>✏</button>
+                                <button name={item.id || ''} onClick={deleteCategory}>x</button>
 
-                            <input name={item.id} type="text" onChange={inputHandlerC}  value={inputEditorValue ?? item.label}  disabled={inputActive == item.id ? false : true}/>
-                        </li>)
-                    })
+                                <input name={item.id || ''} type="text" onChange={inputHandlerC}
+                                       value={item.label || ''}
+                                       disabled={inputActive != item.id}/>
+                            </li>)
+                        }) : null
                 }
             </ul>
         </div>
