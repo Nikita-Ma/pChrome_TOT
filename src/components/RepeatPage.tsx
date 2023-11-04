@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {HOST, METHOD, PORT_COLLECTION} from "../../CONSTANTS.ts";
 
 export default function RepeatPage() {
     const [showAnswer, setShowAnswer] = useState(false)
@@ -25,7 +26,7 @@ export default function RepeatPage() {
 
         async function reqCollectionLettersData() {
             const collectionID = location.href.split("/")[4]
-            const fetchCollectionData = await fetch('http://localhost:3001/collection/' + collectionID)
+            const fetchCollectionData = await fetch(`${METHOD}${HOST}${PORT_COLLECTION}/collection/` + collectionID)
             const preparedJSON = await fetchCollectionData.json()
             setLetters({letters: preparedJSON.message})
         }
@@ -52,7 +53,7 @@ export default function RepeatPage() {
 
 
     const handlerRememberClicked = async () => {
-        const fetchReq = await fetch('http://localhost:3001/collection/letters', {
+        const fetchReq = await fetch(`${METHOD}${HOST}${PORT_COLLECTION}/collection/letters`, {
             method: 'PATCH',
             body: JSON.stringify({
                 // @ts-ignore
@@ -75,7 +76,7 @@ export default function RepeatPage() {
 
     // TODO: Refactor on one method but use param id='verify' 'incorrect'
     const handlerForgetClicked = async () => {
-        const fetchReq = await fetch('http://localhost:3001/collection/letters', {
+        const fetchReq = await fetch(`${METHOD}${HOST}${PORT_COLLECTION}/collection/letters`, {
             method: 'PATCH',
             body: JSON.stringify({
                 // @ts-ignore

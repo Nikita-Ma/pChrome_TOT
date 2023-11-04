@@ -2,6 +2,7 @@ import {Link, useNavigate} from "react-router-dom";
 import {ChangeEvent, useEffect, useState} from "react";
 import {getLocalStorage} from "../utils/localStorage/getLocalStorage.ts";
 import {setLocalStorage} from "../utils/localStorage/setLocalStorage.ts";
+import {HOST, METHOD, PORT_AUTH} from "../../CONSTANTS.ts";
 
 
 
@@ -69,7 +70,7 @@ export default function RegisterPage() {
 
 
         if (userData.password === userData.confirmPassword) {
-            const fetchUserData = await fetch('http://localhost:3002/auth/register', {
+            const fetchUserData = await fetch(`${METHOD}${HOST}${PORT_AUTH}/auth/register`, {
                 method: 'POST',
                 body: JSON.stringify({email: userData.email, password: userData.confirmPassword}),
                 headers: {

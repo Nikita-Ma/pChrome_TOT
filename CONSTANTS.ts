@@ -1,1 +1,5 @@
 export const VERSION= '0.0.1'
+export const METHOD= 'http://'
+export const HOST= 'localhost:'
+export const PORT_COLLECTION= '3001'
+export const PORT_AUTH= '3002'

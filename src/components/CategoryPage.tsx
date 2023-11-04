@@ -1,6 +1,7 @@
 import {Link} from "react-router-dom";
 import {ChangeEvent, useEffect, useState} from "react";
 import {getLocalStorage} from "../utils/localStorage/getLocalStorage.ts";
+import {HOST, METHOD, PORT_COLLECTION} from "../../CONSTANTS.ts";
 
 interface IUser {
     user: {
@@ -55,7 +56,7 @@ export default function CategoryPage() {
         async function reqCollectionData() {
             try {
                 console.log(userData);
-                const fetchCollectionData = await fetch('http://localhost:3001/collection?creatorid=' + userData.user.id);
+                const fetchCollectionData = await fetch(`${METHOD}${HOST}${PORT_COLLECTION}/collection?creatorid=` + userData.user.id);
                 if (!fetchCollectionData.ok) {
                     alert('Network response was not ok');
                     return;
@@ -110,7 +111,7 @@ export default function CategoryPage() {
     const saveCategory = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
         if (inputValue.trim().length) {
-            await fetch('http://localhost:3001/collection', {
+            await fetch(`${METHOD}${HOST}${PORT_COLLECTION}/collection`, {
                 method: 'POST',
                 body: JSON.stringify({label: inputValue, isAdmin: "admin", creatorid: userData.user.id}),
                 headers: {
@@ -134,7 +135,7 @@ export default function CategoryPage() {
         }
 
         if (collectionData.collections[idx].label) {
-            await fetch('http://localhost:3001/collection', {
+            await fetch(`${METHOD}${HOST}${PORT_COLLECTION}/collection`, {
                 method: 'PUT',
 
                 body: JSON.stringify({
@@ -156,7 +157,7 @@ export default function CategoryPage() {
         const inputValue = buttonElement.name;
         console.log(inputValue)
         e.preventDefault()
-        await fetch('http://localhost:3001/collection', {
+        await fetch(`${METHOD}${HOST}${PORT_COLLECTION}/collection`, {
             method: 'DELETE',
             body: JSON.stringify({id: inputValue, isAdmin: "admin", creatorid: userData.user.id}),
             headers: {

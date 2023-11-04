@@ -1,6 +1,7 @@
 import {Link} from "react-router-dom";
 import {ChangeEvent, useEffect, useState} from "react";
 import {getLocalStorage} from "../utils/localStorage/getLocalStorage.ts";
+import {HOST, METHOD, PORT_COLLECTION} from "../../CONSTANTS.ts";
 
 
 interface IUser {
@@ -75,7 +76,7 @@ export default function CategoryPage() {
             const collectionID = await getLocalStorage('category')
 
             // @ts-ignore
-            const fetchCollectionData = await fetch('http://localhost:3001/collection/' + collectionID.categoryDid)
+            const fetchCollectionData = await fetch(`${METHOD}${HOST}${PORT_COLLECTION}/collection/` + collectionID.categoryDid)
             const preparedJSON = await fetchCollectionData.json()
 
             setInputEditorValue(prevState => {
@@ -235,7 +236,7 @@ export default function CategoryPage() {
             console.log(categ.categoryDid)
             // @ts-ignore
             alert(categ.categoryDid)
-            await fetch('http://localhost:3001/collection/letter', {
+            await fetch(`${METHOD}${HOST}${PORT_COLLECTION}/collection/letter`, {
                 method: 'POST',
             // @ts-ignore
                 body: JSON.stringify({...inputValue, isAdmin: "admin", creatorid: userData.user.id, did: categ.categoryDid}),
@@ -255,7 +256,7 @@ export default function CategoryPage() {
         const idx = letters.letters.findIndex((el) => el.id == buttonElement.name)
         e.preventDefault()
         if (letters.letters[idx].term) {
-            await fetch('http://localhost:3001/collection/letters', {
+            await fetch(`${METHOD}${HOST}${PORT_COLLECTION}/collection/letters`, {
                 method: 'PUT',
                 body: JSON.stringify({
                     id: inputEditorValue.id,
@@ -278,7 +279,7 @@ export default function CategoryPage() {
         const inputValue = buttonElement.name;
         // console.log(inputValue)
         e.preventDefault()
-        await fetch('http://localhost:3001/collection/letters', {
+        await fetch(`${METHOD}${HOST}${PORT_COLLECTION}/collection/letters`, {
             method: 'DELETE',
             body: JSON.stringify({id: inputValue}),
             headers: {

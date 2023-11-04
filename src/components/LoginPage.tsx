@@ -1,6 +1,7 @@
 import {Link} from "react-router-dom";
 import {ChangeEvent, useEffect, useState} from "react";
 import {useNavigate} from 'react-router-dom'
+import {HOST, METHOD, PORT_AUTH} from "../../CONSTANTS.ts";
 
 export default function LoginPage() {
 
@@ -56,7 +57,7 @@ export default function LoginPage() {
 
 
         if (userData.password.length && userData.email.length) {
-            const fetchUserData = await fetch('http://localhost:3002/auth/login', {
+            const fetchUserData = await fetch(`${METHOD}${HOST}${PORT_AUTH}/auth/login`, {
                 method: 'POST',
                 body: JSON.stringify({email: userData.email, password: userData.password}),
                 headers: {

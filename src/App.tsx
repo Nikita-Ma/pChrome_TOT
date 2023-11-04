@@ -1,7 +1,7 @@
 import './normalize.css'
 import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {VERSION} from "../CONSTANTS.ts";
+import {HOST, METHOD, PORT_AUTH, PORT_COLLECTION, VERSION} from "../CONSTANTS.ts";
 import {getLocalStorage} from "./utils/localStorage/getLocalStorage.ts";
 import {deleteChromeStorage} from "./utils/localStorage/deleteChromeStorage.ts";
 import {setLocalStorage} from "./utils/localStorage/setLocalStorage.ts";
@@ -63,7 +63,7 @@ function App() {
 
         async function reqCollectionData() {
             try {
-                const fetchCollectionData = await fetch('http://localhost:3001/collection?creatorid=' + userData.user.id);
+                const fetchCollectionData = await fetch(`${METHOD}${HOST}${PORT_COLLECTION}/collection?creatorid=` + userData.user.id);
                 if (!fetchCollectionData.ok) {
                     alert('Network response was not ok');
                     return;
@@ -104,7 +104,7 @@ function App() {
                         isAdmin: 'admin',
                     };
                     // TODO: Refactor bad practice setState (in this situation)
-                    const allUserData = await fetch('http://localhost:3002/auth/login', {
+                    const allUserData = await fetch(`${METHOD}${HOST}${PORT_AUTH}/auth/login`, {
                         method: "POST",
                         body: JSON.stringify(fetchOBJ),
                         headers: {
