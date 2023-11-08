@@ -7,6 +7,7 @@ export default function RepeatPage() {
     const [activeLetter, setActiveLetter] = useState(0)
     const [auth, setAuth] = useState(false)
 
+    // @ts-ignore
     const [userData, setUserData] = useState({
         user: {
             nikname: '',
@@ -28,21 +29,13 @@ export default function RepeatPage() {
             const collectionID = location.href.split("/")[4]
             const fetchCollectionData = await fetch(`${METHOD}${HOST}${PORT_COLLECTION}/collection/` + collectionID)
             const preparedJSON = await fetchCollectionData.json()
+            console.log('СООБЩЕНИЕ ПРЕПАРЕД ', preparedJSON)
             setLetters({letters: preparedJSON.message})
         }
 
-        if (userData.user.email == '') {
-            const allCookies = document.cookie;
+        if (true) {
 
-            const cookieArray = allCookies.split('; ');
-
-            for (let i = 0; i < cookieArray.length; i++) {
-                const cookie = cookieArray[i].split('=');
-                if (cookie[0] === "auth") {
-                    setUserData(JSON.parse(cookie[1]))
                     setAuth(true)
-                }
-            }
         }
 
 

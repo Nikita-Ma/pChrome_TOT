@@ -77,11 +77,10 @@ function App() {
                 }
 
                 setCollectionData({collections: preparedJSON.message})
-                setLocalStorage('category', {categoryDid:  preparedJSON.message[0]?.id})
 
-                if (collectionData?.collections !== undefined) {
-                    setActiveOption(collectionData?.collections[0]?.id || null);
-                }
+                setLocalStorage('category', {categoryDid: preparedJSON.message[0]?.id})
+                // @ts-ignore
+                setActiveOption(preparedJSON.message[0].id);
             } catch (error) {
                 console.error('Error fetching collection data:', error);
             }
@@ -129,7 +128,6 @@ function App() {
                 }
 
 
-
             } else {
                 console.log('Invalid data in storage')
             }
@@ -140,7 +138,7 @@ function App() {
         if (auth) {
             reqCollectionData().then(r => {
                 console.log('Request completed', r)
-            } )
+            })
         }
     }, [auth])
 
@@ -152,7 +150,12 @@ function App() {
             return false
         }
         setLocalStorage('category', {categoryDid: e.target.value ?? collectionData?.collections[0].id})
-        setActiveOption(e.target.value ?? collectionData?.collections[0].id)
+        if (e.target.value === 'undefined') {
+            setActiveOption(collectionData?.collections[0].id)
+
+        } else {
+            setActiveOption(e.target.value)
+        }
     }
 
     return (
